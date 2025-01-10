@@ -72,7 +72,10 @@ const processMessage = async (
 ) => {
   await context.sendActivity({type: 'typing'});
 
-  if (state.conversation === undefined || state.conversation === null) {
+  if (state.conversation === undefined || 
+    state.conversation === null || 
+    state.conversation.messages === undefined || 
+    state.conversation.messages === null) {
     createConversationHistory(state);
   }
 
