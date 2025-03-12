@@ -21,6 +21,17 @@ import { ChatTurn } from '../api';
 import {ActionData, ResponseCard} from '../shared/types';
 import {constants} from '../shared/constants';
 
+// Function to convert HTML to Markdown
+function convertHtmlToMarkdown(html) {
+  // Convert bold HTML tags to Markdown
+  let markdown = html.replace(/<strong>(.*?)<\/strong>/g, '**$1**');
+
+  // Convert italic HTML tags to Markdown
+  markdown = markdown.replace(/<em>(.*?)<\/em>/g, '*$1*');
+
+  return markdown;
+}
+
 const setup = (app: Application) => {
   app.activity(
     ActivityTypes.InstallationUpdate,
@@ -42,6 +53,20 @@ const setup = (app: Application) => {
     }
   );
 
+  // app.adaptiveCards.actionExecute(
+  //   'example',
+  //   async (context: TurnContext, state: ApplicationTurnState) => {
+  //     const {action} = context.activity.value as AdaptiveCardInvokeValue;
+  //     const {text} = action.data as ActionData;
+
+  //     resetConversationHistory(state);
+  //     await processMessage(text, context, state);
+
+  //     const card = createWelcomeCard(constants.questions);
+  //     return card as AdaptiveCard;
+  //   }
+  // );
+
   app.adaptiveCards.actionExecute(
     'example',
     async (context: TurnContext, state: ApplicationTurnState) => {
@@ -49,6 +74,17 @@ const setup = (app: Application) => {
       const {text} = action.data as ActionData;
 
       resetConversationHistory(state);
+
+      const data: ResponseCard = {
+        answer: text,
+        citations: null,
+        supportingContent: null,
+      };
+
+      const restateCard = createResponseCard(data);
+
+      await sendAdaptiveCard(context, restateCard);
+
       await processMessage(text, context, state);
 
       const card = createWelcomeCard(constants.questions);
@@ -92,7 +128,8 @@ const processMessage = async (
   setConversationId(state, askResponseGpt.conversation_id);
 
   const citationFileReferences = getCitations(askResponseGpt.answer);
-  const answer = replaceCitations(citationFileReferences, askResponseGpt.answer);
+  const markdown_answer = convertHtmlToMarkdown(askResponseGpt.answer);
+  const answer = replaceCitations(citationFileReferences, markdown_answer);
   const citations = convertCitations(citationFileReferences);
   const followup_questions = null;
   const supportingContent = null;
