@@ -2,6 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "target": "es2017",
+    "skipLibCheck": true,
     "module": "commonjs",
     "outDir": "./lib",
     "rootDir": "./",

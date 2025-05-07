@@ -20,3 +20,7 @@ lib/
 
 # Azurite emulator
 _storage_emulator
+__blobstorage__/
+__queuestorage__/
+__azurite_db_*
+AzuriteConfig
