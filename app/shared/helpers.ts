@@ -158,7 +158,7 @@ export const convertCitations = (citations: string[]): Citation[] => {
   return citations.map(citation => {
     return {
       filename: citation,
-      url: `${config.appBackendEndpoint}/content/${citation}`,
+      url: `${config.appBackendEndpoint}api/get-blob?blob_name=${citation}`,
     };
   });
 };
